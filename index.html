@@ -9,97 +9,204 @@
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
-    <style>
+  <style>
     body {
-        font-family: 'Segoe UI', sans-serif;
-        background-color: #f8f9fa;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh; /* hace que el footer quede abajo */
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
     header {
-        background-color: #0056b3; /* Azul */
-        color: white;
-        padding: 40px 40px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+      background-color: #0056b3;
+      color: white;
+      padding: 40px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    /* Contenedor de logos centrado */
     .logos {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 40px; /* separación entre los logos */
-        flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex-grow: 1;
     }
 
     .logos img {
-        height: 120px;
-        width: auto;
+      height: 120px;
+      width: auto;
     }
 
     .btn-reservar {
-        background-color: #ffcc00; /* Amarillo */
-        color: #0056b3;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        margin-left: auto;
+      background-color: #ffcc00;
+      color: #0056b3;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: auto;
+      transition: transform 0.2s ease, background-color 0.2s ease;
     }
 
     .btn-reservar:hover {
-        background-color: #ffd633;
+      background-color: #ffd633;
+      transform: scale(1.05);
     }
 
     #calendar {
-        max-width: 70%;
-        margin: 40px auto;
-        background-color: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        flex-grow: 1; /* ocupa el espacio restante */
+      max-width: 70%;
+      margin: 40px auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      flex-grow: 1;
     }
 
     footer {
-        background-color: #0056b3;
-        color: white;
-        text-align: center;
-        padding: 10px;
-        font-size: 14px;
-        margin-top: auto; /* empuja el footer al fondo */
+      background-color: #0056b3;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: auto;
     }
-    </style>
 
+    /* ======= MODAL ======= */
+    .modal { 
+      display: none; 
+      position: fixed; 
+      inset: 0; 
+      z-index: 1200; 
+    }
+
+    .modal[aria-hidden="false"] { 
+      display: block; 
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .modal-backdrop {
+      position: fixed; 
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      animation: backdropFade 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes backdropFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      position: fixed;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      width: 92%;
+      max-width: 1100px;
+      max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+      padding: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { transform: translate(-50%, -45%); opacity: 0; }
+      to { transform: translate(-50%, -50%); opacity: 1; }
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 12px; top: 12px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .modal-close:hover {
+      background-color: #f5f5f5;
+    }
+
+    .iframe-wrap {
+      flex: 1 1 auto;
+      min-height: 300px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .iframe-wrap iframe {
+      width: 100%;
+      height: 100%;
+      min-height: 560px;
+      border: none;
+      display: block;
+    }
+
+    @media (max-width: 600px) {
+      .modal-content { width: 98%; padding: 12px; border-radius: 6px; }
+      .iframe-wrap iframe { min-height: 70vh; }
+    }
+  </style>
 </head>
 
 <body>
 
   <header>
-    <!-- Contenedor con los 3 logos -->
     <div class="logos">
       <img src="logofintrade.png" alt="Logo 1">
       <img src="logosalle.png" alt="Logo 2">
-
     </div>
 
-    <button class="btn-reservar">Reservar</button>
+    <button id="openReservas" class="btn-reservar">Reservar</button>
   </header>
 
+  <!-- ====== MODAL ====== -->
+  <div id="modalReservas" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
+    <div class="modal-backdrop" id="backdrop"></div>
+
+    <div class="modal-content" role="document" tabindex="-1">
+      <button class="modal-close" id="closeReservas" aria-label="Cerrar formulario">✕</button>
+      <h2 id="modalTitle" style="margin:0 0 12px 0;color:#003366;">Formulario de Reserva</h2>
+
+      <div class="iframe-wrap">
+        <iframe id="formIframe"
+          src="https://forms.office.com/Pages/ResponsePage.aspx?id=wVZ8DOeoWk6dq8_VFeRamFWrgKhdVllPliHTuZJ905VUNThLRFFYMjRUQlJaN0c5V0taMFFRWDAwMy4u&embed=true"
+          frameborder="0"
+          allowfullscreen
+          title="Formulario de reservas laboratorio Fintrade">
+        </iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== CALENDARIO ====== -->
   <div id="calendar"></div>
 
   <footer>
     © 2025 Laboratorio Fintrade - Todos los derechos reservados.
   </footer>
 
+  <!-- ====== SCRIPTS ====== -->
   <script>
+    // --- Calendario ---
     document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
       var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -118,8 +225,33 @@
       });
       calendar.render();
     });
+
+    // --- Modal ---
+    const btnOpen = document.getElementById('openReservas');
+    const modal = document.getElementById('modalReservas');
+    const btnClose = document.getElementById('closeReservas');
+    const backdrop = document.getElementById('backdrop');
+
+    function openModal() {
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    btnOpen.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal();
+    });
+
+    btnClose.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
   </script>
 
 </body>
 </html>
+
 
