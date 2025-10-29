@@ -9,8 +9,11 @@
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
+  <!-- Iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
   <style>
-    /* ======== FONDO DE PANTALLA ======== */
+    /* ======== FONDO Y ESTRUCTURA ======== */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -20,41 +23,55 @@
       min-height: 100vh;
       background: url("fondo.jpg") no-repeat center center fixed;
       background-size: cover;
-      color: #000;
     }
 
-    /* Capa semitransparente para contraste */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-color: rgba(255,255,255,0.85); /* Blanco translúcido */
-      z-index: -1;
-    }
-
+    /* ======== HEADER ======== */
     header {
       background-color: rgba(0, 86, 179, 0.95);
       color: white;
-      padding: 30px 40px;
+      padding: 25px 40px 10px 40px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
+      text-align: center;
+      position: relative;
     }
 
     .logos {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 40px;
-      flex-grow: 1;
+      gap: 50px;
+      flex-wrap: wrap;
     }
 
     .logos img {
-      height: 100px;
+      height: 90px;
       width: auto;
     }
 
+    .titulo-header {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 22px;
+      color: #fff;
+      font-weight: 600;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
+
+    .titulo-header i {
+      font-size: 26px;
+      color: #ffcc00;
+    }
+
+    /* ======== BOTÓN RESERVAR ======== */
     .btn-reservar {
+      position: absolute;
+      right: 40px;
+      top: 40px;
       background-color: #ffcc00;
       color: #0056b3;
       border: none;
@@ -62,19 +79,18 @@
       border-radius: 5px;
       cursor: pointer;
       font-weight: bold;
-      margin-left: auto;
-      transition: transform 0.2s ease, background-color 0.2s ease;
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
     }
-
     .btn-reservar:hover {
-      background-color: #ffd633;
-      transform: scale(1.05);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
     }
 
+    /* ======== CALENDARIO ======== */
     #calendar {
       max-width: 70%;
       margin: 40px auto;
-      background-color: rgba(255, 255, 255, 0.95);
+      background-color: rgba(255,255,255,0.95);
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -90,91 +106,70 @@
       margin-top: auto;
     }
 
-    /* ======= MODAL ======= */
-    .modal { 
-      display: none; 
-      position: fixed; 
-      inset: 0; 
-      z-index: 1200; 
-    }
-
-    .modal[aria-hidden="false"] { 
-      display: block; 
-      animation: fadeIn 0.25s ease-out;
-    }
-
-    .modal-backdrop {
-      position: fixed; 
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      animation: backdropFade 0.3s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes backdropFade {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal-content {
+    /* ======== MODAL (overlay) ======== */
+    .modal {
+      display: none;
       position: fixed;
-      left: 50%; top: 50%;
-      transform: translate(-50%, -50%);
-      background: #fff;
-      width: 92%;
+      inset: 0;
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.5);
+      -webkit-backdrop-filter: blur(2px);
+      backdrop-filter: blur(2px);
+    }
+
+    .modal[aria-hidden="false"] { display: flex; }
+
+    .modal-box {
+      width: 94%;
       max-width: 1100px;
       max-height: 90vh;
-      border-radius: 10px;
-      box-shadow: 0 12px 30px rgba(0,0,0,.25);
-      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
-      animation: slideUp 0.3s ease-out;
     }
 
-    @keyframes slideUp {
-      from { transform: translate(-50%, -45%); opacity: 0; }
-      to { transform: translate(-50%, -50%); opacity: 1; }
+    .modal-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px 16px;
+      background: #f7f7f7;
+      border-bottom: 1px solid #eee;
     }
+
+    .modal-header h3 { margin:0; font-size:16px; color:#003366; }
 
     .modal-close {
-      position: absolute;
-      right: 12px; top: 12px;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 6px 10px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .modal-close:hover {
-      background-color: #f5f5f5;
-    }
-
-    .iframe-wrap {
-      flex: 1 1 auto;
-      min-height: 300px;
-      overflow: hidden;
-      margin-top: 8px;
-    }
-
-    .iframe-wrap iframe {
-      width: 100%;
-      height: 100%;
-      min-height: 560px;
+      background: transparent;
       border: none;
-      display: block;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 6px;
     }
 
-    @media (max-width: 600px) {
-      .modal-content { width: 98%; padding: 12px; border-radius: 6px; }
-      .iframe-wrap iframe { min-height: 70vh; }
+    .modal-body {
+      flex:1 1 auto;
+      overflow:auto;
+      background: #fff;
+    }
+
+    .modal-body iframe {
+      width:100%;
+      height:100%;
+      min-height:560px;
+      border:0;
+      display:block;
+    }
+
+    @media (max-width:900px){
+      .logos img{ height:72px; }
+      .titulo-header{ font-size:18px; }
+      .btn-reservar{ right:18px; top:18px; padding:8px 12px; }
     }
   </style>
 </head>
@@ -186,38 +181,42 @@
       <img src="logofintrade.png" alt="Logo Fintrade">
       <img src="logosalle.png" alt="Logo La Salle">
     </div>
-    <button id="openReservas" class="btn-reservar">Reservar</button>
+
+    <div class="titulo-header">
+      <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+      <span>Consulta el calendario y reserva tu espacio en el Laboratorio Fintrade</span>
+    </div>
+
+    <!-- botón: abrir modal con formulario embebido -->
+    <button id="openReservas" class="btn-reservar" aria-haspopup="dialog" aria-controls="formModal">Reservar</button>
   </header>
 
-  <!-- ====== MODAL ====== -->
-  <div id="modalReservas" class="modal" aria-hidden="true" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
-    <div class="modal-backdrop" id="backdrop"></div>
+  <!-- calendario (sin cambios al diseño) -->
+  <div id="calendar"></div>
 
-    <div class="modal-content" role="document" tabindex="-1">
-      <button class="modal-close" id="closeReservas" aria-label="Cerrar formulario">✕</button>
-      <h2 id="modalTitle" style="margin:0 0 12px 0;color:#003366;">Formulario de Reserva</h2>
-
-      <div class="iframe-wrap">
-        <iframe id="formIframe"
+  <!-- MODAL: formulario embebido (NO cambia positions en la página) -->
+  <div id="formModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box" role="document">
+      <div class="modal-header">
+        <h3 id="modalTitle">Formulario de reserva</h3>
+        <button class="modal-close" id="closeModal" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+        <iframe
           src="https://forms.office.com/Pages/ResponsePage.aspx?id=wVZ8DOeoWk6dq8_VFeRamFWrgKhdVllPliHTuZJ905VUNThLRFFYMjRUQlJaN0c5V0taMFFRWDAwMy4u&embed=true"
-          frameborder="0"
+          title="Formulario de reservas"
           allowfullscreen
-          title="Formulario de reservas laboratorio Fintrade">
-        </iframe>
+        ></iframe>
       </div>
     </div>
   </div>
-
-  <!-- ====== CALENDARIO ====== -->
-  <div id="calendar"></div>
 
   <footer>
     © 2025 Laboratorio Fintrade - Todos los derechos reservados.
   </footer>
 
-  <!-- ====== SCRIPTS ====== -->
   <script>
-    // --- Calendario ---
+    // FullCalendar init (manteniendo comportamiento original)
     document.addEventListener('DOMContentLoaded', function() {
       var calendarEl = document.getElementById('calendar');
       var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -231,35 +230,35 @@
         },
         selectable: true,
         dateClick: function(info) {
-          alert('Has seleccionado: ' + info.dateStr);
+          // si quieres que al clicar fecha abra modal, descomenta la línea siguiente:
+          // openFormModal();
         }
       });
       calendar.render();
     });
 
-    // --- Modal ---
-    const btnOpen = document.getElementById('openReservas');
-    const modal = document.getElementById('modalReservas');
-    const btnClose = document.getElementById('closeReservas');
-    const backdrop = document.getElementById('backdrop');
+    // Modal open/close (no altera layout)
+    const openBtn = document.getElementById('openReservas');
+    const modal = document.getElementById('formModal');
+    const closeBtn = document.getElementById('closeModal');
 
-    function openModal() {
-      modal.setAttribute('aria-hidden', 'false');
+    function openFormModal(){
+      modal.setAttribute('aria-hidden','false');
       document.body.style.overflow = 'hidden';
     }
-
-    function closeModal() {
-      modal.setAttribute('aria-hidden', 'true');
+    function closeFormModal(){
+      modal.setAttribute('aria-hidden','true');
       document.body.style.overflow = '';
     }
 
-    btnOpen.addEventListener('click', (e) => {
-      e.preventDefault();
-      openModal();
+    openBtn.addEventListener('click', openFormModal);
+    closeBtn.addEventListener('click', closeFormModal);
+    modal.addEventListener('click', function(e){
+      if(e.target === modal) closeFormModal();
     });
-
-    btnClose.addEventListener('click', closeModal);
-    backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeFormModal();
+    });
   </script>
 
 </body>
