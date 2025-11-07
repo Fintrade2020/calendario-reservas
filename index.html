@@ -115,22 +115,28 @@
       align-items: center;
       justify-content: center;
       background: rgba(0,0,0,0.5);
-      -webkit-backdrop-filter: blur(2px);
       backdrop-filter: blur(2px);
     }
 
     .modal[aria-hidden="false"] { display: flex; }
 
+    /* 🔹 AJUSTE AQUÍ: cuadro más pequeño */
     .modal-box {
-      width: 94%;
-      max-width: 1100px;
-      max-height: 90vh;
+      width: 90%;
+      max-width: 450px;  /* antes era 1100px */
+      max-height: 80vh;  /* más compacto */
       background: #fff;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 20px 40px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
+      animation: aparecer 0.25s ease;
+    }
+
+    @keyframes aparecer {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
     .modal-header {
@@ -152,18 +158,27 @@
       padding: 6px;
     }
 
+    /* 🔹 CONTENIDO AJUSTADO */
     .modal-body {
       flex:1 1 auto;
       overflow:auto;
       background: #fff;
+      padding: 20px;
+      font-size: 14px;
+      color: #333;
     }
 
-    .modal-body iframe {
-      width:100%;
-      height:100%;
-      min-height:560px;
-      border:0;
-      display:block;
+    .reserva-item {
+      background: #f1f5f9;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .sin-reservas {
+      color: #777;
+      font-style: italic;
     }
 
     @media (max-width:900px){
@@ -191,21 +206,34 @@
     <button id="openReservas" class="btn-reservar" aria-haspopup="dialog" aria-controls="formModal">Reservar</button>
   </header>
 
-  <!-- calendario (sin cambios al diseño) -->
   <div id="calendar"></div>
 
-  <!-- MODAL: formulario embebido (NO cambia positions en la página) -->
+  <!-- MODAL DISPONIBILIDAD -->
+  <div id="availabilityModal" class="modal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Espacios reservados</h3>
+        <button class="modal-close" id="closeAvailability">✕</button>
+      </div>
+      <div class="modal-body" id="availabilityBody">
+        <!-- contenido dinámico -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FORMULARIO -->
   <div id="formModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-box" role="document">
+    <div class="modal-box" role="document" style="max-width: 800px;">
       <div class="modal-header">
         <h3 id="modalTitle">Formulario de reserva</h3>
         <button class="modal-close" id="closeModal" aria-label="Cerrar">✕</button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="padding:0;">
         <iframe
           src="https://forms.office.com/Pages/ResponsePage.aspx?id=wVZ8DOeoWk6dq8_VFeRamFWrgKhdVllPliHTuZJ905VUNThLRFFYMjRUQlJaN0c5V0taMFFRWDAwMy4u&embed=true"
           title="Formulario de reservas"
           allowfullscreen
+          style="width:100%; height:560px; border:0;"
         ></iframe>
       </div>
     </div>
@@ -215,9 +243,15 @@
     © 2025 Laboratorio Fintrade - Todos los derechos reservados.
   </footer>
 
-  <script>
-    // FullCalendar init (manteniendo comportamiento original)
-    document.addEventListener('DOMContentLoaded', function() {
+   <script>
+    // Ejemplo de reservas locales (para fallback si no carga Outlook)
+    const reservas = {
+      "2025-11-04": ["8:00 - 10:00", "14:00 - 15:00"],
+      "2025-11-06": ["10:00 - 12:00"],
+      "2025-11-10": ["9:00 - 11:00", "15:00 - 17:00"]
+    };
+
+    document.addEventListener('DOMContentLoaded', async function() {
       var calendarEl = document.getElementById('calendar');
       var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -230,14 +264,80 @@
         },
         selectable: true,
         dateClick: function(info) {
-          // si quieres que al clicar fecha abra modal, descomenta la línea siguiente:
-          // openFormModal();
+          mostrarDisponibilidad(info.dateStr);
+        },
+        // 🟢 PASO A: Cargar automáticamente las reservas del calendario Outlook .ICS
+        events: async function(fetchInfo, successCallback, failureCallback) {
+          try {
+            const res = await fetch(
+              'https://outlook.office365.com/owa/calendar/59a8b8c5cc3f4db7bb43d3d340971df9@lasalle.edu.co/157e000c2e7c40fc87960a78616e435d5872419050128890982/calendar.ics'
+            );
+            const text = await res.text();
+
+            // Convertir archivo .ics en eventos legibles por FullCalendar
+            const events = [];
+            const regex = /BEGIN:VEVENT[\s\S]*?END:VEVENT/g;
+            const matches = text.match(regex);
+
+            if (matches) {
+              matches.forEach(evento => {
+                const summary = /SUMMARY:(.*)/.exec(evento);
+                const dtstart = /DTSTART.*:(.*)/.exec(evento);
+                const dtend = /DTEND.*:(.*)/.exec(evento);
+
+                if (dtstart && dtend) {
+                  events.push({
+                    title: summary ? summary[1] : "Reservado",
+                    start: dtstart[1],
+                    end: dtend[1],
+                    backgroundColor: "#ffcc00",
+                    borderColor: "#ffcc00"
+                  });
+                }
+              });
+            }
+            successCallback(events);
+          } catch (err) {
+            console.error("Error al cargar .ics", err);
+            failureCallback(err);
+          }
         }
       });
+
       calendar.render();
     });
 
-    // Modal open/close (no altera layout)
+    // Mostrar modal con reservas (sin tocar)
+    function mostrarDisponibilidad(fecha) {
+      const modal = document.getElementById('availabilityModal');
+      const body = document.getElementById('availabilityBody');
+      const reservasDia = reservas[fecha];
+
+      body.innerHTML = '';
+
+      if (reservasDia && reservasDia.length > 0) {
+        reservasDia.forEach(hora => {
+          const div = document.createElement('div');
+          div.className = 'reserva-item';
+          div.textContent = `⏰ ${hora} — Espacio reservado`;
+          body.appendChild(div);
+        });
+      } else {
+        const p = document.createElement('p');
+        p.textContent = 'No hay espacios reservados para este día.';
+        p.className = 'sin-reservas';
+        body.appendChild(p);
+      }
+
+      modal.setAttribute('aria-hidden','false');
+    }
+
+    // Cerrar modal de disponibilidad
+    document.getElementById('closeAvailability').addEventListener('click', () => {
+      document.getElementById('availabilityModal').setAttribute('aria-hidden','true');
+    });
+
+    // Modal del formulario (sin cambios)
     const openBtn = document.getElementById('openReservas');
     const modal = document.getElementById('formModal');
     const closeBtn = document.getElementById('closeModal');
@@ -260,6 +360,7 @@
       if(e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeFormModal();
     });
   </script>
+
 
 </body>
 </html>
