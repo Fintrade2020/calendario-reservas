@@ -1,366 +1,183 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reservas Fintrade</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reservas Fintrade</title>
 
-  <!-- FullCalendar -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <!-- FullCalendar -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
 
-  <!-- Iconos -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-  <style>
-    /* ======== FONDO Y ESTRUCTURA ======== */
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      background: url("fondo.jpg") no-repeat center center fixed;
-      background-size: cover;
-    }
-
-    /* ======== HEADER ======== */
-    header {
-      background-color: rgba(0, 86, 179, 0.95);
-      color: white;
-      padding: 25px 40px 10px 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      position: relative;
-    }
-
-    .logos {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 50px;
-      flex-wrap: wrap;
-    }
-
-    .logos img {
-      height: 90px;
-      width: auto;
-    }
-
-    .titulo-header {
-      margin-top: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: 22px;
-      color: #fff;
-      font-weight: 600;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
-    }
-
-    .titulo-header i {
-      font-size: 26px;
-      color: #ffcc00;
-    }
-
-    /* ======== BOTÓN RESERVAR ======== */
-    .btn-reservar {
-      position: absolute;
-      right: 40px;
-      top: 40px;
-      background-color: #ffcc00;
-      color: #0056b3;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: transform 0.14s ease, box-shadow 0.14s ease;
-    }
-    .btn-reservar:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-    }
-
-    /* ======== CALENDARIO ======== */
-    #calendar {
-      max-width: 70%;
-      margin: 40px auto;
-      background-color: rgba(255,255,255,0.95);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      flex-grow: 1;
-    }
-
-    footer {
-      background-color: rgba(0, 86, 179, 0.95);
-      color: white;
-      text-align: center;
-      padding: 10px;
-      font-size: 14px;
-      margin-top: auto;
-    }
-
-    /* ======== MODAL (overlay) ======== */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 3000;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(2px);
-    }
-
-    .modal[aria-hidden="false"] { display: flex; }
-
-    /* 🔹 AJUSTE AQUÍ: cuadro más pequeño */
-    .modal-box {
-      width: 90%;
-      max-width: 450px;  /* antes era 1100px */
-      max-height: 80vh;  /* más compacto */
-      background: #fff;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
-      animation: aparecer 0.25s ease;
-    }
-
-    @keyframes aparecer {
-      from { transform: scale(0.95); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-header {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding: 12px 16px;
-      background: #f7f7f7;
-      border-bottom: 1px solid #eee;
-    }
-
-    .modal-header h3 { margin:0; font-size:16px; color:#003366; }
-
-    .modal-close {
-      background: transparent;
-      border: none;
-      font-size: 20px;
-      cursor: pointer;
-      padding: 6px;
-    }
-
-    /* 🔹 CONTENIDO AJUSTADO */
-    .modal-body {
-      flex:1 1 auto;
-      overflow:auto;
-      background: #fff;
-      padding: 20px;
-      font-size: 14px;
-      color: #333;
-    }
-
-    .reserva-item {
-      background: #f1f5f9;
-      border-radius: 6px;
-      padding: 8px;
-      margin-bottom: 8px;
-      font-size: 13px;
-    }
-
-    .sin-reservas {
-      color: #777;
-      font-style: italic;
-    }
-
-    @media (max-width:900px){
-      .logos img{ height:72px; }
-      .titulo-header{ font-size:18px; }
-      .btn-reservar{ right:18px; top:18px; padding:8px 12px; }
-    }
-  </style>
-</head>
-
-<body>
-
-  <header>
-    <div class="logos">
-      <img src="logofintrade.png" alt="Logo Fintrade">
-      <img src="logosalle.png" alt="Logo La Salle">
-    </div>
-
-    <div class="titulo-header">
-      <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
-      <span>Consulta el calendario y reserva tu espacio en el Laboratorio Fintrade</span>
-    </div>
-
-    <!-- botón: abrir modal con formulario embebido -->
-    <button id="openReservas" class="btn-reservar" aria-haspopup="dialog" aria-controls="formModal">Reservar</button>
-  </header>
-
-  <div id="calendar"></div>
-
-  <!-- MODAL DISPONIBILIDAD -->
-  <div id="availabilityModal" class="modal" aria-hidden="true">
-    <div class="modal-box">
-      <div class="modal-header">
-        <h3>Espacios reservados</h3>
-        <button class="modal-close" id="closeAvailability">✕</button>
-      </div>
-      <div class="modal-body" id="availabilityBody">
-        <!-- contenido dinámico -->
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL FORMULARIO -->
-  <div id="formModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-box" role="document" style="max-width: 800px;">
-      <div class="modal-header">
-        <h3 id="modalTitle">Formulario de reserva</h3>
-        <button class="modal-close" id="closeModal" aria-label="Cerrar">✕</button>
-      </div>
-      <div class="modal-body" style="padding:0;">
-        <iframe
-          src="https://forms.office.com/Pages/ResponsePage.aspx?id=wVZ8DOeoWk6dq8_VFeRamFWrgKhdVllPliHTuZJ905VUNThLRFFYMjRUQlJaN0c5V0taMFFRWDAwMy4u&embed=true"
-          title="Formulario de reservas"
-          allowfullscreen
-          style="width:100%; height:560px; border:0;"
-        ></iframe>
-      </div>
-    </div>
-  </div>
-
-  <footer>
-    © 2025 Laboratorio Fintrade - Todos los derechos reservados.
-  </footer>
-
-   <script>
-    // Ejemplo de reservas locales (para fallback si no carga Outlook)
-    const reservas = {
-      "2025-11-04": ["8:00 - 10:00", "14:00 - 15:00"],
-      "2025-11-06": ["10:00 - 12:00"],
-      "2025-11-10": ["9:00 - 11:00", "15:00 - 17:00"]
-    };
-
-    document.addEventListener('DOMContentLoaded', async function() {
-      var calendarEl = document.getElementById('calendar');
-      var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'es',
-        height: 'auto',
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        selectable: true,
-        dateClick: function(info) {
-          mostrarDisponibilidad(info.dateStr);
-        },
-        // 🟢 PASO A: Cargar automáticamente las reservas del calendario Outlook .ICS
-        events: async function(fetchInfo, successCallback, failureCallback) {
-          try {
-            const res = await fetch(
-              'https://outlook.office365.com/owa/calendar/59a8b8c5cc3f4db7bb43d3d340971df9@lasalle.edu.co/157e000c2e7c40fc87960a78616e435d5872419050128890982/calendar.ics'
-            );
-            const text = await res.text();
-
-            // Convertir archivo .ics en eventos legibles por FullCalendar
-            const events = [];
-            const regex = /BEGIN:VEVENT[\s\S]*?END:VEVENT/g;
-            const matches = text.match(regex);
-
-            if (matches) {
-              matches.forEach(evento => {
-                const summary = /SUMMARY:(.*)/.exec(evento);
-                const dtstart = /DTSTART.*:(.*)/.exec(evento);
-                const dtend = /DTEND.*:(.*)/.exec(evento);
-
-                if (dtstart && dtend) {
-                  events.push({
-                    title: summary ? summary[1] : "Reservado",
-                    start: dtstart[1],
-                    end: dtend[1],
-                    backgroundColor: "#ffcc00",
-                    borderColor: "#ffcc00"
-                  });
-                }
-              });
-            }
-            successCallback(events);
-          } catch (err) {
-            console.error("Error al cargar .ics", err);
-            failureCallback(err);
-          }
-        }
-      });
-
-      calendar.render();
-    });
-
-    // Mostrar modal con reservas (sin tocar)
-    function mostrarDisponibilidad(fecha) {
-      const modal = document.getElementById('availabilityModal');
-      const body = document.getElementById('availabilityBody');
-      const reservasDia = reservas[fecha];
-
-      body.innerHTML = '';
-
-      if (reservasDia && reservasDia.length > 0) {
-        reservasDia.forEach(hora => {
-          const div = document.createElement('div');
-          div.className = 'reserva-item';
-          div.textContent = `⏰ ${hora} — Espacio reservado`;
-          body.appendChild(div);
-        });
-      } else {
-        const p = document.createElement('p');
-        p.textContent = 'No hay espacios reservados para este día.';
-        p.className = 'sin-reservas';
-        body.appendChild(p);
+    <!-- Estilos -->
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-image: url("fondo.jpg");
+        background-size: cover;
+        background-position: center;
+        margin: 0;
+        padding: 0;
       }
 
-      modal.setAttribute('aria-hidden','false');
-    }
+      header {
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-    // Cerrar modal de disponibilidad
-    document.getElementById('closeAvailability').addEventListener('click', () => {
-      document.getElementById('availabilityModal').setAttribute('aria-hidden','true');
-    });
+      header img {
+        height: 50px;
+      }
 
-    // Modal del formulario (sin cambios)
-    const openBtn = document.getElementById('openReservas');
-    const modal = document.getElementById('formModal');
-    const closeBtn = document.getElementById('closeModal');
+      h1 {
+        color: white;
+        text-align: center;
+      }
 
-    function openFormModal(){
-      modal.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeFormModal(){
-      modal.setAttribute('aria-hidden','true');
-      document.body.style.overflow = '';
-    }
+      #calendar {
+        max-width: 900px;
+        margin: 40px auto;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      }
 
-    openBtn.addEventListener('click', openFormModal);
-    closeBtn.addEventListener('click', closeFormModal);
-    modal.addEventListener('click', function(e){
-      if(e.target === modal) closeFormModal();
-    });
-    document.addEventListener('keydown', function(e){
-      if(e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeFormModal();
-    });
-  </script>
+      form {
+        max-width: 500px;
+        margin: 20px auto;
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
 
+      label {
+        display: block;
+        margin-top: 10px;
+      }
 
-</body>
+      input,
+      select {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        background-color: #0078d7;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-top: 15px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #005ea6;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img src="logofintrade.png" alt="Logo Fintrade" />
+      <img src="logosalle.png" alt="Logo La Salle" />
+    </header>
+
+    <h1>Calendario de Reservas Fintrade</h1>
+
+    <div id="calendar"></div>
+
+    <form id="reservaForm">
+      <h3>Formulario de Reserva</h3>
+      <label for="nombre">Nombre completo:</label>
+      <input type="text" id="nombre" required />
+
+      <label for="correo">Correo institucional:</label>
+      <input type="email" id="correo" required />
+
+      <label for="fecha">Fecha:</label>
+      <input type="date" id="fecha" required />
+
+      <label for="hora">Hora:</label>
+      <input type="time" id="hora" required />
+
+      <label for="metodo">Método de pago:</label>
+      <select id="metodo" required>
+        <option value="">Seleccione...</option>
+        <option value="tarjeta">Tarjeta de crédito</option>
+        <option value="efectivo">Efectivo</option>
+        <option value="transferencia">Transferencia</option>
+      </select>
+
+      <button type="submit">Reservar</button>
+    </form>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        const calendarEl = document.getElementById("calendar");
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: "dayGridMonth",
+          locale: "es",
+          headerToolbar: {
+            left: "prev,next today",
+            center: "title",
+            right: "dayGridMonth,timeGridWeek,timeGridDay",
+          },
+
+          events: async function (fetchInfo, successCallback, failureCallback) {
+            try {
+              const res = await fetch(
+                "https://fintrade2020.github.io/calendario-reservas/calendar.ics" // 🔹 Ruta pública del archivo .ics
+              );
+              const text = await res.text();
+
+              // Parse básico de eventos ICS
+              const events = [];
+              const regex = /BEGIN:VEVENT([\s\S]*?)END:VEVENT/g;
+              let match;
+              while ((match = regex.exec(text))) {
+                const vevent = match[1];
+                const summary = vevent.match(/SUMMARY:(.*)/)?.[1] || "Sin título";
+                const dtstart = vevent.match(/DTSTART(?:;[^:]+)?:([0-9T]+)/)?.[1];
+                const dtend = vevent.match(/DTEND(?:;[^:]+)?:([0-9T]+)/)?.[1];
+                if (dtstart && dtend) {
+                  events.push({
+                    title: summary,
+                    start: dtstart,
+                    end: dtend,
+                  });
+                }
+              }
+
+              successCallback(events);
+            } catch (err) {
+              console.error("Error al cargar el archivo ICS:", err);
+              failureCallback(err);
+            }
+          },
+        });
+
+        calendar.render();
+
+        // Manejo del formulario
+        const form = document.getElementById("reservaForm");
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+          alert("Reserva enviada correctamente 🎉");
+          form.reset();
+        });
+      });
+    </script>
+  </body>
 </html>
