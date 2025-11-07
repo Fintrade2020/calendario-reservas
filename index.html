@@ -1,183 +1,110 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reservas Fintrade</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservas Fintrade</title>
 
-    <!-- FullCalendar -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+  <!-- FullCalendar -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
-    <!-- Estilos -->
-    <style>
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background-image: url("fondo.jpg");
-        background-size: cover;
-        background-position: center;
-        margin: 0;
-        padding: 0;
-      }
+  <!-- Iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-      header {
-        background-color: rgba(0, 0, 0, 0.6);
-        padding: 10px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: url("fondo.jpg") no-repeat center center fixed;
+      background-size: cover;
+    }
 
-      header img {
-        height: 50px;
-      }
+    header {
+      background-color: rgba(0, 86, 179, 0.95);
+      color: white;
+      padding: 25px 40px 10px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
 
-      h1 {
-        color: white;
-        text-align: center;
-      }
+    .logos {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+      flex-wrap: wrap;
+    }
 
-      #calendar {
-        max-width: 900px;
-        margin: 40px auto;
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      }
+    .logos img {
+      height: 90px;
+      width: auto;
+    }
 
-      form {
-        max-width: 500px;
-        margin: 20px auto;
-        background-color: rgba(255, 255, 255, 0.95);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
+    .titulo-header {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 22px;
+      color: #fff;
+      font-weight: 600;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
 
-      label {
-        display: block;
-        margin-top: 10px;
-      }
+    .titulo-header i {
+      font-size: 26px;
+      color: #ffcc00;
+    }
 
-      input,
-      select {
-        width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-      }
+    .btn-reservar {
+      position: absolute;
+      right: 40px;
+      top: 40px;
+      background-color: #ffcc00;
+      color: #0056b3;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.14s ease, box-shadow 0.14s ease;
+    }
+    .btn-reservar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
 
-      button {
-        background-color: #0078d7;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        margin-top: 15px;
-        cursor: pointer;
-      }
+    #calendar {
+      max-width: 70%;
+      margin: 40px auto;
+      background-color: rgba(255,255,255,0.95);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      flex-grow: 1;
+    }
 
-      button:hover {
-        background-color: #005ea6;
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <img src="logofintrade.png" alt="Logo Fintrade" />
-      <img src="logosalle.png" alt="Logo La Salle" />
-    </header>
+    footer {
+      background-color: rgba(0, 86, 179, 0.95);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: auto;
+    }
 
-    <h1>Calendario de Reservas Fintrade</h1>
-
-    <div id="calendar"></div>
-
-    <form id="reservaForm">
-      <h3>Formulario de Reserva</h3>
-      <label for="nombre">Nombre completo:</label>
-      <input type="text" id="nombre" required />
-
-      <label for="correo">Correo institucional:</label>
-      <input type="email" id="correo" required />
-
-      <label for="fecha">Fecha:</label>
-      <input type="date" id="fecha" required />
-
-      <label for="hora">Hora:</label>
-      <input type="time" id="hora" required />
-
-      <label for="metodo">Método de pago:</label>
-      <select id="metodo" required>
-        <option value="">Seleccione...</option>
-        <option value="tarjeta">Tarjeta de crédito</option>
-        <option value="efectivo">Efectivo</option>
-        <option value="transferencia">Transferencia</option>
-      </select>
-
-      <button type="submit">Reservar</button>
-    </form>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", async function () {
-        const calendarEl = document.getElementById("calendar");
-
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: "dayGridMonth",
-          locale: "es",
-          headerToolbar: {
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay",
-          },
-
-          events: async function (fetchInfo, successCallback, failureCallback) {
-            try {
-              const res = await fetch(
-                "https://fintrade2020.github.io/calendario-reservas/calendar.ics" // 🔹 Ruta pública del archivo .ics
-              );
-              const text = await res.text();
-
-              // Parse básico de eventos ICS
-              const events = [];
-              const regex = /BEGIN:VEVENT([\s\S]*?)END:VEVENT/g;
-              let match;
-              while ((match = regex.exec(text))) {
-                const vevent = match[1];
-                const summary = vevent.match(/SUMMARY:(.*)/)?.[1] || "Sin título";
-                const dtstart = vevent.match(/DTSTART(?:;[^:]+)?:([0-9T]+)/)?.[1];
-                const dtend = vevent.match(/DTEND(?:;[^:]+)?:([0-9T]+)/)?.[1];
-                if (dtstart && dtend) {
-                  events.push({
-                    title: summary,
-                    start: dtstart,
-                    end: dtend,
-                  });
-                }
-              }
-
-              successCallback(events);
-            } catch (err) {
-              console.error("Error al cargar el archivo ICS:", err);
-              failureCallback(err);
-            }
-          },
-        });
-
-        calendar.render();
-
-        // Manejo del formulario
-        const form = document.getElementById("reservaForm");
-        form.addEventListener("submit", function (e) {
-          e.preventDefault();
-          alert("Reserva enviada correctamente 🎉");
-          form.reset();
-        });
-      });
-    </script>
-  </body>
-</html>
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      align-
